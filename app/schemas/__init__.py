@@ -1,0 +1,1 @@
+# Modelos pydantc (DTOs).
