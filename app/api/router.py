@@ -1,6 +1,6 @@
 # app/api/router.py
 from fastapi import APIRouter
-from app.api.v1 import example
+from app.api.v1 import example, user
 
 api_router = APIRouter(prefix="/api")
 
@@ -8,4 +8,10 @@ api_router.include_router(
     example.router,
     prefix="/example",
     tags=["Example"]
+)
+
+api_router.include_router(
+    user.router,
+    prefix="/user",
+    tags=["User"]
 )
