@@ -2,20 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.services.user_service import UserService
-from app.db.sql.engine import PostgresEngine
-import os
-from dotenv import load_dotenv
+from app.api.dependecies import get_db
 
 router = APIRouter()
-
-def get_db():
-    load_dotenv()
-    database_url = os.getenv("database_url")
-    db = PostgresEngine(database_url).get_session()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -23,13 +12,8 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=list[UserResponse])
 def get_users(db: Session = Depends(get_db)):
-    try:
-        return UserService.get_all_users(db)
-    except Exception as e:
-        print(e)
-        return{
-            "Failed": True
-        }
+    return UserService.get_all_users(db)
+    
 
 @router.get("/{id_user}", response_model=UserResponse)
 def get_user(id_user: int, db: Session = Depends(get_db)):
