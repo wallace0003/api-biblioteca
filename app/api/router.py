@@ -1,17 +1,32 @@
 # app/api/router.py
 from fastapi import APIRouter
-from app.api.v1 import example, user
+from app.api.v1 import example, user, loan, author, book
 
 api_router = APIRouter(prefix="/api")
 
 api_router.include_router(
-    example.router,
-    prefix="/example",
-    tags=["Example"]
+    user.router,
+    prefix="/users",
+    tags=["User"]
 )
 
+
 api_router.include_router(
-    user.router,
-    prefix="/user",
-    tags=["User"]
+    loan.router,
+    prefix="/loans",
+    tags=["loans"]
+)
+
+
+api_router.include_router(
+    author.router,
+    prefix="/authors",
+    tags=["authros"]
+)
+
+
+api_router.include_router(
+    book.router,
+    prefix="/books",
+    tags=["books"]
 )

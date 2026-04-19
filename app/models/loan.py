@@ -1,6 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Integer, ForeignKey, Date, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 
 from app.models.base import Base
 
@@ -20,9 +21,12 @@ class Loan(Base):
         nullable=False
     )
 
-    created_at: Mapped[datetime] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.now()
+    )
 
-    date_loan: Mapped[datetime] = mapped_column(Date, nullable=False)
+    date_loan: Mapped[datetime] = mapped_column(Date, nullable=False, default=datetime.now())
     date_return: Mapped[datetime] = mapped_column(Date, nullable=True)
     date_expected_return: Mapped[datetime] = mapped_column(Date, nullable=False)
 
