@@ -142,7 +142,7 @@ Responsável por dados **semi-estruturados e históricos**.
 
 ```json
 {
-  "user_id": 1,
+  "id_user": 1,
   "book_id": 10,
   "loan_date": "2026-04-10",
   "return_date": "2026-04-15",
