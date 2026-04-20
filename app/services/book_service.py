@@ -1,6 +1,17 @@
 from sqlalchemy.orm import Session
 from app.models import Book
 from app.schemas.book import BookCreate, BookUpdate
+from app.db.redis.redis_client import RedisClient
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+redis_client = RedisClient(
+    host=os.getenv("redis_host"),
+    port=int(os.getenv("redis_port")),
+    db=int(os.getenv("redis_n_db"))
+)
 
 class BookService:
 
