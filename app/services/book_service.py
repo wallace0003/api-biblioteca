@@ -5,8 +5,8 @@ from app.db.redis.redis_client import RedisClient
 import os
 from dotenv import load_dotenv
 
+#TODO: iniciarlizar redis no dependecies. Passar como parâmetro no construtor de "BookService"
 load_dotenv()
-
 redis_client = RedisClient(
     host=os.getenv("redis_host"),
     port=int(os.getenv("redis_port")),
