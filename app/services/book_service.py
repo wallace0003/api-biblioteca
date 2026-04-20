@@ -13,19 +13,49 @@ redis_client = RedisClient(
     db=int(os.getenv("redis_n_db"))
 )
 
+
 class BookService:
+
+    @staticmethod
+    def _to_dict_list(books):
+        return [
+            {
+                "id_book": b.id_book,
+                "title": b.title,
+                "year": b.year,
+                "id_author": b.id_author
+            }
+            for b in books
+        ]
 
     @staticmethod
     def create(db: Session, data: BookCreate):
         book = Book(**data.model_dump())
+
         db.add(book)
         db.commit()
         db.refresh(book)
+        books = db.query(Book).all()
+        books_dict = BookService._to_dict_list(books)
+
+        redis_client.set_books(books_dict)
+
         return book
 
     @staticmethod
     def get_all(db: Session):
-        return db.query(Book).all()
+        cached = redis_client.get_books()
+        if cached:
+            print("Get Redis")
+            return cached
+
+        print("Get PostgreSQL")
+
+        books = db.query(Book).all()
+        books_dict = BookService._to_dict_list(books)
+        redis_client.set_books(books_dict)
+
+        return books_dict
 
     @staticmethod
     def get_by_id(db: Session, id_book: int):
@@ -43,6 +73,11 @@ class BookService:
 
         db.commit()
         db.refresh(book)
+
+        books = db.query(Book).all()
+        books_dict = BookService._to_dict_list(books)
+        redis_client.set_books(books_dict)
+
         return book
 
     @staticmethod
@@ -54,4 +89,9 @@ class BookService:
 
         db.delete(book)
         db.commit()
+
+        books = db.query(Book).all()
+        books_dict = BookService._to_dict_list(books)
+        redis_client.set_books(books_dict)
+
         return True

@@ -21,7 +21,7 @@ api_router.include_router(
 api_router.include_router(
     author.router,
     prefix="/authors",
-    tags=["authros"]
+    tags=["authors"]
 )
 
 
