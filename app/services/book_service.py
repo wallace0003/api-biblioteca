@@ -15,7 +15,6 @@ redis_client = RedisClient(
 
 
 class BookService:
-
     @staticmethod
     def _to_dict_list(books):
         return [
