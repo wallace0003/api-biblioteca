@@ -2,21 +2,15 @@ from sqlalchemy.orm import Session
 from app.models import Book
 from app.schemas.book import BookCreate, BookUpdate
 from app.db.redis.redis_client import RedisClient
-import os
-from dotenv import load_dotenv
-
-#TODO: iniciarlizar redis no dependecies. Passar como parâmetro no construtor de "BookService"
-load_dotenv()
-redis_client = RedisClient(
-    host=os.getenv("redis_host"),
-    port=int(os.getenv("redis_port")),
-    db=int(os.getenv("redis_n_db"))
-)
+from app.db.mongo.mongo_client import MongoClientManager
 
 
 class BookService:
-    @staticmethod
-    def _to_dict_list(books):
+    def __init__(self, redis: RedisClient, mongo: MongoClientManager):
+        self.redis = redis
+        self.mongo = mongo
+
+    def _to_dict_list(self, books):
         return [
             {
                 "id_book": b.id_book,
@@ -27,45 +21,94 @@ class BookService:
             for b in books
         ]
 
-    @staticmethod
-    def create(db: Session, data: BookCreate):
+    def create(self, db: Session, data: BookCreate):
         book = Book(**data.model_dump())
 
         db.add(book)
         db.commit()
         db.refresh(book)
-        books = db.query(Book).all()
-        books_dict = BookService._to_dict_list(books)
 
-        redis_client.set_books(books_dict)
+        books = db.query(Book).all()
+        books_dict = self._to_dict_list(books)
+        self.redis.set_books(books_dict)
+
+        try:
+            self.mongo.insert_log("logs", {
+                "event": "CREATE_BOOK",
+                "book_id": book.id_book,
+                "data": data.model_dump()
+            })
+        except Exception:
+            pass
 
         return book
 
-    @staticmethod
-    def get_all(db: Session):
-        cached = redis_client.get_books()
+    def get_all(self, db: Session):
+        cached = self.redis.get_books()
+
         if cached:
-            print("Get Redis")
+            print("get with Redis")
+
+            try:
+                self.mongo.insert_log("logs", {
+                    "event": "GET_ALL_BOOKS",
+                    "source": "redis"
+                })
+            except:
+                pass
+
             return cached
 
-        print("Get PostgreSQL")
+        print("get with PostgreSQL")
 
         books = db.query(Book).all()
-        books_dict = BookService._to_dict_list(books)
-        redis_client.set_books(books_dict)
+        books_dict = self._to_dict_list(books)
+
+        self.redis.set_books(books_dict)
+
+        try:
+            self.mongo.insert_log("logs", {
+                "event": "GET_ALL_BOOKS",
+                "source": "database",
+                "count": len(books_dict)
+            })
+        except:
+            pass
 
         return books_dict
 
-    @staticmethod
-    def get_by_id(db: Session, id_book: int):
-        return db.query(Book).filter(Book.id_book == id_book).first()
+    def get_by_id(self, db: Session, id_book: int):
+        book = db.query(Book).filter(Book.id_book == id_book).first()
 
-    @staticmethod
-    def update(db: Session, id_book: int, data: BookUpdate):
+        try:
+            self.mongo.insert_log("logs", {
+                "event": "GET_BOOK",
+                "book_id": id_book,
+                "found": bool(book)
+            })
+        except:
+            pass
+
+        return book
+
+    def update(self, db: Session, id_book: int, data: BookUpdate):
         book = db.query(Book).filter(Book.id_book == id_book).first()
 
         if not book:
+            try:
+                self.mongo.insert_log("logs", {
+                    "event": "UPDATE_BOOK",
+                    "book_id": id_book,
+                    "status": "NOT_FOUND"
+                })
+            except:
+                pass
             return None
+
+        old_data = {
+            "title": book.title,
+            "year": book.year
+        }
 
         for key, value in data.model_dump(exclude_unset=True).items():
             setattr(book, key, value)
@@ -74,23 +117,49 @@ class BookService:
         db.refresh(book)
 
         books = db.query(Book).all()
-        books_dict = BookService._to_dict_list(books)
-        redis_client.set_books(books_dict)
+        books_dict = self._to_dict_list(books)
+        self.redis.set_books(books_dict)
+
+        try:
+            self.mongo.insert_log("logs", {
+                "event": "UPDATE_BOOK",
+                "book_id": id_book,
+                "old_data": old_data,
+                "new_data": data.model_dump(exclude_unset=True)
+            })
+        except:
+            pass
 
         return book
 
-    @staticmethod
-    def delete(db: Session, id_book: int):
+    def delete(self, db: Session, id_book: int):
         book = db.query(Book).filter(Book.id_book == id_book).first()
 
         if not book:
+            try:
+                self.mongo.insert_log("logs", {
+                    "event": "DELETE_BOOK",
+                    "book_id": id_book,
+                    "status": "NOT_FOUND"
+                })
+            except:
+                pass
             return False
 
         db.delete(book)
         db.commit()
 
         books = db.query(Book).all()
-        books_dict = BookService._to_dict_list(books)
-        redis_client.set_books(books_dict)
+        books_dict = self._to_dict_list(books)
+        self.redis.set_books(books_dict)
+
+        try:
+            self.mongo.insert_log("logs", {
+                "event": "DELETE_BOOK",
+                "book_id": id_book,
+                "status": "SUCCESS"
+            })
+        except:
+            pass
 
         return True
