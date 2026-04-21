@@ -4,15 +4,15 @@ from app.api.router import api_router
 import uvicorn
 
 app = FastAPI(
-    title="Testando chamada da API.",
-    version="0.0.0"
+    title="API biblioteca.",
+    version="0.0.1"
 )
 
 app.include_router(api_router)
 
 @app.get("/")
 async def teste():
-    return {"status": "API rodando"}
+    return {"ping": "pong"}
 
 if __name__ == "__main__":
     uvicorn.run(
