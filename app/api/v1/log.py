@@ -18,6 +18,11 @@ def get_logs(service: LogService = Depends(get_log_service)):
     return service.get_all()
 
 
+@router.get("/event/{event}", response_model=List[LogResponse])
+def get_logs_by_event(event: str, service: LogService = Depends(get_log_service)):
+    return service.get_by_event(event)
+
+
 @router.get("/{log_id}", response_model=LogResponse)
 def get_log(log_id: str, service: LogService = Depends(get_log_service)):
     log = service.get_by_id(log_id)
@@ -26,11 +31,6 @@ def get_log(log_id: str, service: LogService = Depends(get_log_service)):
         raise HTTPException(status_code=404, detail="Log not found")
 
     return log
-
-
-@router.get("/event/{event}", response_model=List[LogResponse])
-def get_logs_by_event(event: str, service: LogService = Depends(get_log_service)):
-    return service.get_by_event(event)
 
 
 @router.delete("/{log_id}")
