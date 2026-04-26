@@ -230,7 +230,6 @@ def menu_logs():
         print("2 - Buscar log por ID")
         print("3 - Buscar logs por evento")
         print("4 - Deletar log")
-        print("5 - Limpar todos os logs")
         print("0 - Voltar")
 
         opcao = input("Escolha: ")
@@ -249,13 +248,6 @@ def menu_logs():
         elif opcao == "4":
             log_id = input("ID do log: ")
             pprint(client.delete_log(log_id))
-
-        elif opcao == "5":
-            confirm = input("Tem certeza? Digite SIM: ")
-            if confirm == "SIM":
-                pprint(client.clear_logs())
-            else:
-                print("Operação cancelada.")
 
         elif opcao == "0":
             break
