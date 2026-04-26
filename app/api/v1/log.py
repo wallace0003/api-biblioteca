@@ -15,35 +15,59 @@ def get_log_service(mongo: MongoClientManager = Depends(get_mongo)):
 
 @router.get("/", response_model=List[LogResponse])
 def get_logs(service: LogService = Depends(get_log_service)):
-    return service.get_all()
-
+    try:
+        return service.get_all()
+    except Exception as e:
+        return{
+            "error" : "Not found"
+        }
 
 @router.get("/event/{event}", response_model=List[LogResponse])
 def get_logs_by_event(event: str, service: LogService = Depends(get_log_service)):
-    return service.get_by_event(event)
-
+    try:
+        return service.get_by_event(event)
+    except Exception as e:
+        return{
+            "error" : "Not found"
+        }
 
 @router.get("/{log_id}", response_model=LogResponse)
 def get_log(log_id: str, service: LogService = Depends(get_log_service)):
-    log = service.get_by_id(log_id)
+    try:
+        log = service.get_by_id(log_id)
 
-    if not log:
-        raise HTTPException(status_code=404, detail="Log not found")
+        if not log:
+            raise HTTPException(status_code=404, detail="Log not found")
 
-    return log
+        return log
+    except Exception as e:
+        return{
+            "error" : "Not found"
+        }
 
 
 @router.delete("/{log_id}")
 def delete_log(log_id: str, service: LogService = Depends(get_log_service)):
-    success = service.delete(log_id)
+    try:
+        success = service.delete(log_id)
 
-    if not success:
-        raise HTTPException(status_code=404, detail="Log not found")
+        if not success:
+            raise HTTPException(status_code=404, detail="Log not found")
 
-    return {"message": "Log deleted successfully"}
+        return {"message": "Log deleted successfully"}
+    except Exception as e:
+        return{
+            "error" : "Not found"
+        }
 
 
 @router.delete("/")
 def delete_all_logs(service: LogService = Depends(get_log_service)):
-    count = service.delete_all()
-    return {"deleted": count}
+    try:
+        count = service.delete_all()
+        return {"deleted": count}
+
+    except Exception as e:
+        return{
+            "error" : "Not found"
+        }

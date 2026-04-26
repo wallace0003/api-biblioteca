@@ -28,7 +28,7 @@ class Loan(Base):
 
     date_loan: Mapped[datetime] = mapped_column(Date, nullable=False, default=datetime.now())
     date_return: Mapped[datetime] = mapped_column(Date, nullable=True)
-    date_expected_return: Mapped[datetime] = mapped_column(Date, nullable=False)
+    date_expected_return: Mapped[datetime] = mapped_column(Date, nullable=True)
 
     user: Mapped["User"] = relationship(
         back_populates="loans"

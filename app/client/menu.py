@@ -38,7 +38,7 @@ def menu_users():
 
         elif opcao == "3":
             data = {
-                "name": input("Nome: "),
+                "user_name": input("Nome: "),
                 "email": input("Email: "),
             }
             pprint(client.create_user(data))
@@ -47,11 +47,11 @@ def menu_users():
             user_id = read_int("ID do usuário: ")
             data = {}
 
-            name = input("Novo nome, ou ENTER para manter: ")
+            user_name = input("Novo nome, ou ENTER para manter: ")
             email = input("Novo email, ou ENTER para manter: ")
 
-            if name:
-                data["name"] = name
+            if user_name:
+                data["user_name"] = user_name
             if email:
                 data["email"] = email
 
@@ -91,14 +91,14 @@ def menu_authors():
 
         elif opcao == "3":
             data = {
-                "name": input("Nome do autor: "),
+                "author_name": input("Nome do autor: "),
             }
             pprint(client.create_author(data))
 
         elif opcao == "4":
             author_id = read_int("ID do autor: ")
             data = {
-                "name": input("Novo nome do autor: "),
+                "author_name": input("Novo nome do autor: "),
             }
             pprint(client.update_author(author_id, data))
 
@@ -137,7 +137,8 @@ def menu_books():
         elif opcao == "3":
             data = {
                 "title": input("Título: "),
-                "author_id": read_int("ID do autor: "),
+                "id_author": read_int("ID do autor: "),
+                "year": read_int("Ano de lançamento: ")
             }
             pprint(client.create_book(data))
 
@@ -151,7 +152,7 @@ def menu_books():
             if title:
                 data["title"] = title
             if author_id:
-                data["author_id"] = int(author_id)
+                data["id_author"] = int(author_id)
 
             pprint(client.update_book(book_id, data))
 
@@ -189,8 +190,9 @@ def menu_loans():
 
         elif opcao == "3":
             data = {
-                "user_id": read_int("ID do usuário: "),
-                "book_id": read_int("ID do livro: "),
+                "id_user": read_int("ID do usuário: "),
+                "id_book": read_int("ID do livro: "),
+                "date_expected_return": input("Data devolução:")
             }
             pprint(client.create_loan(data))
 
@@ -202,9 +204,9 @@ def menu_loans():
             book_id = input("Novo ID do livro, ou ENTER para manter: ")
 
             if user_id:
-                data["user_id"] = int(user_id)
+                data["id_user"] = int(user_id)
             if book_id:
-                data["book_id"] = int(book_id)
+                data["id_book"] = int(book_id)
 
             pprint(client.update_loan(loan_id, data))
 
