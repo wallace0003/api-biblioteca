@@ -11,3 +11,12 @@ O sistema utiliza múltiplos bancos de dados, cada um escolhido de acordo com su
 - Banco relacional para dados estruturados
 - Banco NoSQL para dados semi-estruturados
 - Sistema de cache para otimização de performance
+
+## 🚀 Como executar o projeto
+
+Para executar o projeto, é necessário ter o Docker e o Docker Compose instalados na máquina.
+
+Utilize o comando abaixo para iniciar os containers:
+
+```bash
+docker-compose up
