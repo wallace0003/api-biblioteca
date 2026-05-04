@@ -20,3 +20,19 @@ Utilize o comando abaixo para iniciar os containers:
 
 ```bash
 docker-compose up
+```
+---
+
+## 📌 Commit 3 — PostgreSQL
+
+## 🐘 PostgreSQL
+
+O PostgreSQL é utilizado como banco de dados relacional do sistema.
+
+Ele é responsável por armazenar dados estruturados e garantir a integridade das informações, como:
+
+- Usuários
+- Empréstimos
+- Relacionamentos entre entidades
+
+Esse modelo segue o padrão relacional, garantindo consistência e organização dos dados principais da aplicação.
