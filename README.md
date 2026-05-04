@@ -23,8 +23,6 @@ docker-compose up
 ```
 ---
 
-## 📌 Commit 3 — PostgreSQL
-
 ## 🐘 PostgreSQL
 
 O PostgreSQL é utilizado como banco de dados relacional do sistema.
