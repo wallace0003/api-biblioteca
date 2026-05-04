@@ -34,3 +34,15 @@ Ele é responsável por armazenar dados estruturados e garantir a integridade da
 - Relacionamentos entre entidades
 
 Esse modelo segue o padrão relacional, garantindo consistência e organização dos dados principais da aplicação.
+
+## ⚡ Redis
+
+O Redis é utilizado como sistema de cache.
+
+Ele armazena informações que são frequentemente acessadas pelos usuários, como os dados dos livros, melhorando significativamente o desempenho da aplicação e reduzindo a carga sobre o banco de dados principal.
+
+## 🍃 MongoDB
+
+O MongoDB é utilizado para armazenar dados semi-estruturados.
+
+Neste projeto, ele é responsável principalmente pelo armazenamento de logs do sistema, permitindo maior flexibilidade na estrutura dos dados e facilitando análises futuras.
